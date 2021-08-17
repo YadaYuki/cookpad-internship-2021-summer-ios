@@ -2,23 +2,22 @@ import SwiftUI
 
 struct ProductListPageView: View {
     @State var products: [FetchProductsQuery.Data.Product] = []
-    @State var cardViewIsOpen: Bool = false
     var body: some View {
         List(products, id: \.id) { product in
             NavigationLink(destination:ProductDetailPageView(product:product)){
-            HStack(alignment: .top) {
-                RemoteImage(urlString: product.imageUrl)
-                    .frame(width: 100, height: 100)
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(product.name)
-                    Spacer().frame(height: 8)
-                    Text(product.summary)
-                    Spacer()
-                    Text("\(product.price)円")
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                }
-                .padding(.vertical, 8)
-            }}
+                HStack(alignment: .top) {
+                    RemoteImage(urlString: product.imageUrl)
+                        .frame(width: 100, height: 100)
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(product.name)
+                        Spacer().frame(height: 8)
+                        Text(product.summary)
+                        Spacer()
+                        Text("\(product.price)円")
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    .padding(.vertical, 8)
+                }}
         }
         .listStyle(PlainListStyle())
         .onAppear {
@@ -32,19 +31,9 @@ struct ProductListPageView: View {
             }
         }.navigationTitle("MiniMart").toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                      
-                      Button(action: {
-                          self.cardViewIsOpen = true
-                      }) {
-                            Image(systemName: "folder")
-                        }
-                    }
-                }
-              .sheet(isPresented: $cardViewIsOpen) {
-                  NavigationView {
-                      CartPageView()
-                  }
-              }
+                CartButton()
+            }
+        }
     }
 }
 
