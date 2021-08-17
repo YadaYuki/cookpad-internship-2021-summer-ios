@@ -2,8 +2,10 @@ import SwiftUI
 
 struct ProductListPageView: View {
     @State var products: [FetchProductsQuery.Data.Product] = []
+    @State var cardViewIsOpen: Bool = false
     var body: some View {
         List(products, id: \.id) { product in
+            NavigationLink(destination:ProductDetailPageView(product:product)){
             HStack(alignment: .top) {
                 RemoteImage(urlString: product.imageUrl)
                     .frame(width: 100, height: 100)
@@ -16,8 +18,10 @@ struct ProductListPageView: View {
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .padding(.vertical, 8)
-            }
-        }.onAppear {
+            }}
+        }
+        .listStyle(PlainListStyle())
+        .onAppear {
             Network.shared.apollo.fetch(query: FetchProductsQuery()){ result in
                 switch result{
                 case let .success(graphqlResult):
@@ -26,7 +30,21 @@ struct ProductListPageView: View {
                     break
                 }
             }
-        }.navigationTitle("MiniMart")
+        }.navigationTitle("MiniMart").toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                      
+                      Button(action: {
+                          self.cardViewIsOpen = true
+                      }) {
+                            Image(systemName: "folder")
+                        }
+                    }
+                }
+              .sheet(isPresented: $cardViewIsOpen) {
+                  NavigationView {
+                      CartPageView()
+                  }
+              }
     }
 }
 
@@ -48,6 +66,8 @@ struct ProductListPageView_Previews: PreviewProvider {
         ),
     ]
     static var previews: some View {
-        ProductListPageView(products: products)
+        NavigationView{
+            ProductListPageView(products: products)
+        }
     }
 }
